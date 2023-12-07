@@ -8,10 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
+    static Gson gson = new Gson();
+
     public static void main(String[] args) {
         Gson gson = new Gson();
 
@@ -23,13 +27,27 @@ public class Main {
             frame.setLocationRelativeTo(null);
 
             JPanel panel = new JPanel();
-            panel.setLayout(new GridLayout(6,2));
+            panel.setLayout(new GridLayout(7,2));
 
-            JTextField inputField1 = new JTextField();
-            inputField1.setFont((new Font("Arial", Font.PLAIN, 30)));
+//            JTextField inputField1 = new JTextField();
+//            inputField1.setFont((new Font("Arial", Font.PLAIN, 30)));
+//
+//            JLabel label1 = new JLabel("Nome:");
+//            label1.setFont((new Font("Arial", Font.BOLD, 30)));
+//
 
-            JLabel label1 = new JLabel("Nome:");
-            label1.setFont((new Font("Arial", Font.BOLD, 30)));
+
+            JLabel massaLabel = new JLabel("Massa:");
+            massaLabel.setFont((new Font("Arial", Font.BOLD, 30)));
+            JTextField massa = new JTextField();
+            massa.setFont((new Font("Arial", Font.PLAIN, 30)));
+
+
+            JLabel alturaLabel = new JLabel("Altura:");
+            alturaLabel.setFont((new Font("Arial", Font.BOLD, 30)));
+            JTextField altura = new JTextField();
+            altura.setFont((new Font("Arial", Font.PLAIN, 30)));
+
 
             JLabel responseLabel = new JLabel("Resposta: ");
             responseLabel.setFont((new Font("Arial", Font.BOLD, 30)));
@@ -38,8 +56,10 @@ public class Main {
 
 
 
-            panel.add(label1);
-            panel.add(inputField1);
+            panel.add(massaLabel);
+            panel.add(massa);
+            panel.add(alturaLabel);
+            panel.add(altura);
             panel.add(responseLabel);
             panel.add(responseField);
 
@@ -58,7 +78,7 @@ public class Main {
 
                         try {
 
-                            String response = sendRequest(inputField1.getText());
+                            String response = sendRequestPost(massa.getText(), altura.getText());
 
                             responseField.setText(response);
 
@@ -102,6 +122,53 @@ public class Main {
             System.out.println(e);
         }
         return null;
+    }
+
+    public static String sendRequestPost(String massa, String altura) {
+        try {
+            String apiUrl = "http://localhost:3000/api/imc";
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            // Construa os dados a serem enviados no corpo da requisição em formato JSON
+            String jsonInputString = "{\"massa\": \"" + massa + "\", \"altura\": \"" + altura + "\"}";
+
+            // Escreva os dados no corpo da requisição usando OutputStream
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            // Leia a resposta
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = reader.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            reader.close();
+            connection.disconnect();
+
+            return response.toString();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    private static class Data{
+        double massa;
+        double altura;
+
+        Data(Double massa, double altura){
+            this.massa = massa;
+            this.altura = altura;
+        }
     }
 
 
