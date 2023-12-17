@@ -31,7 +31,7 @@ public class Main {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 String resposta = sendRequestPost(codigoTextField.getText());
-                Data respostaServer = gson.fromJson(resposta, Data.class);
+                responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
                 if ("1".equals(respostaServer.ACK)){
                     frame.getContentPane().setBackground(Color.GREEN);
@@ -46,7 +46,7 @@ public class Main {
             @Override
             public void removeUpdate(DocumentEvent e) {
                 String resposta = sendRequestPost(codigoTextField.getText());
-                Data respostaServer = gson.fromJson(resposta, Data.class);
+                responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
                 if ("1".equals(respostaServer.ACK)){
                     frame.getContentPane().setBackground(Color.GREEN);
@@ -61,7 +61,7 @@ public class Main {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 String resposta = sendRequestPost(codigoTextField.getText());
-                Data respostaServer = gson.fromJson(resposta, Data.class);
+                responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
                 if ("1".equals(respostaServer.ACK)){
                     frame.getContentPane().setBackground(Color.GREEN);
@@ -91,10 +91,11 @@ public class Main {
 
             // Construa os dados a serem enviados no corpo da requisição em formato JSON
             String jsonInputString = "{\"codigo\": \"" + codigo + "\"}";
+            String jsonGson = gson.toJson(new requestData(codigo));
 
             // Escreva os dados no corpo da requisição usando OutputStream
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                byte[] input = jsonGson.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
@@ -117,11 +118,20 @@ public class Main {
         return null;
     }
 
-    private static class Data{
+    private static class responseData {
         String ACK;
 
-        Data(String ACK){
+        responseData(String ACK){
            this.ACK = ACK;
+        }
+
+    }
+
+    private static class requestData{
+        String codigo;
+
+        requestData(String codigo){
+            this.codigo = codigo;
         }
     }
 
