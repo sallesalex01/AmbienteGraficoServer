@@ -30,45 +30,42 @@ public class Main {
         codigoTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                String resposta = sendRequestPost(codigoTextField.getText());
-                responseData respostaServer = gson.fromJson(resposta, responseData.class);
+                if(codigoTextField.getText().length() == 10){
+                    String resposta = sendRequestPost(codigoTextField.getText());
+                    responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
-                if ("1".equals(respostaServer.ACK)){
-                    frame.getContentPane().setBackground(Color.GREEN);
-                    resetarCor(frame);
+                    if ("1".equals(respostaServer.ACK)){
+                        frame.getContentPane().setBackground(Color.GREEN);
+                        resetarCor(frame);
 
-                } else {
-                    frame.getContentPane().setBackground(Color.RED);
-                    resetarCor(frame);
+                    } else {
+                        frame.getContentPane().setBackground(Color.RED);
+                        resetarCor(frame);
+                    }
+
+                    SwingUtilities.invokeLater(() -> codigoTextField.setText(""));
                 }
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                String resposta = sendRequestPost(codigoTextField.getText());
-                responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
-                if ("1".equals(respostaServer.ACK)){
-                    frame.getContentPane().setBackground(Color.GREEN);
-                    resetarCor(frame);
-
-                } else {
-                    frame.getContentPane().setBackground(Color.RED);
-                    resetarCor(frame);
-                }
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                String resposta = sendRequestPost(codigoTextField.getText());
-                responseData respostaServer = gson.fromJson(resposta, responseData.class);
+                if(codigoTextField.getText().length() == 10){
+                    String resposta = sendRequestPost(codigoTextField.getText());
+                    responseData respostaServer = gson.fromJson(resposta, responseData.class);
 
-                if ("1".equals(respostaServer.ACK)){
-                    frame.getContentPane().setBackground(Color.GREEN);
-                    resetarCor(frame);
-                } else {
-                    frame.getContentPane().setBackground(Color.RED);
-                    resetarCor(frame);
+                    if ("1".equals(respostaServer.ACK)){
+                        frame.getContentPane().setBackground(Color.GREEN);
+                        resetarCor(frame);
+
+                    } else {
+                        frame.getContentPane().setBackground(Color.RED);
+                        resetarCor(frame);
+                    }
                 }
             }
         });
